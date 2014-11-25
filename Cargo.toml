@@ -4,11 +4,11 @@ name = "xterm"
 version = "0.0.1"
 authors = ["sam atman <atmanistan@gmail.com>"]
 
-description = "xterm library."
+description = "xterm library"
 
-documentation = "..."
-homepage = "..."
-repository = "..."
+
+homepage = "https://github.com/mnemnion/xterm-rust"
+repository = "https://github.com/mnemnion/xterm-rust"
 
 readme = "README.md"
 
