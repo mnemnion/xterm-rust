@@ -6,8 +6,17 @@ mod xterm {
 
     struct EscString(String);
     struct JuString(String);
+    struct TString(String);
 
-    pub enum XString { Esc(EscString), Jump(JuString), Text(String) }
+    pub enum XString { Esc(EscString), Jump(JuString), Text(TString) }
+
+    pub fn print_X ( xstr: XString ) -> () {
+        match xstr {
+            XString::Esc(s) => println!("{}",s.0),
+            XString::Jump(s) => println!("{}", s.0),
+            XString::Text(s) => println!("{}", s.0),
+        }
+    }
 
     pub enum Colors { Red, Blue, Green, Yellow, Magenta, Cyan, White, Default }
 
