@@ -1,0 +1,18 @@
+[package]
+
+name = "xterm"
+version = "0.0.1"
+authors = ["sam atman <atmanistan@gmail.com>"]
+
+description = "xterm library."
+
+documentation = "..."
+homepage = "..."
+repository = "..."
+
+readme = "README.md"
+
+keywords = ["xterm", "vt100", "ansi"]
+
+
+license = "BSD-2-Clause"
