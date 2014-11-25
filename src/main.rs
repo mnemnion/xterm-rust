@@ -4,6 +4,11 @@ mod xterm {
         println!("Hello Xterm!");
     }
 
+    struct EscString(String);
+    struct JuString(String);
+
+    pub enum XString { Esc(EscString), Jump(JuString), Text(String) }
+
     pub enum Colors { Red, Blue, Green, Yellow, Magenta, Cyan, White, Default }
 
     pub fn color_fg ( col: Colors ) -> &'static str {
@@ -42,5 +47,5 @@ fn main() {
     print!("{}",xterm::color_bg(xterm::Colors::Magenta)) ;
     xterm::hello();
     print!("{}",xterm::color_fg(xterm::Colors::Default)) ;
-    println!("foo");
+    println!("");
 }
