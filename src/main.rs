@@ -1,3 +1,6 @@
+#![feature(globs)]
+use xterm::* ;
+
 mod xterm {
 
     pub fn hello() {
@@ -12,7 +15,7 @@ mod xterm {
 
     pub fn print_X ( xstr: XString ) -> () {
         match xstr {
-            XString::Esc(s) => println!("{}",s.0),
+            XString::Esc(s)  => println!("{}", s.0),
             XString::Jump(s) => println!("{}", s.0),
             XString::Text(s) => println!("{}", s.0),
         }
@@ -31,6 +34,22 @@ mod xterm {
             Colors::White   => "\u001b[37m",
             Colors::Default => "\u001b[0m",
         }
+    }
+
+
+    pub fn color_fg_xstr ( col: Colors ) -> XString {
+        let s = match col {
+            Colors::Red     => "\u001b[31m",
+            Colors::Blue    => "\u001b[34m",
+            Colors::Green   => "\u001b[32m",
+            Colors::Yellow  => "\u001b[33m",
+            Colors::Magenta => "\u001b[35m",
+            Colors::Cyan    => "\u001b[36m",
+            Colors::White   => "\u001b[37m",
+            Colors::Default => "\u001b[0m",
+        };
+        let ret: XString = XString::Esc(EscString(s.to_string()));
+        ret
     }
 
     pub fn color_bg ( col: Colors ) -> &'static str {
@@ -52,9 +71,11 @@ mod xterm {
 fn main() {
     println!("Hello, world!");
     let msg: &'static str = xterm::color_fg(xterm::Colors::Green) ;
+    let col_string: XString  = color_fg_xstr(xterm::Colors::Green) ;
     print!("{}",msg);
     print!("{}",xterm::color_bg(xterm::Colors::Magenta)) ;
     xterm::hello();
+    print_X(col_string);
     print!("{}",xterm::color_fg(xterm::Colors::Default)) ;
     println!("");
 }
