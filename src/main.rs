@@ -1,5 +1,6 @@
 #![feature(globs)]
-use xterm::* ;
+use xterm::*;
+use xterm::XString::* ;
 
 mod xterm {
 
@@ -48,6 +49,7 @@ mod xterm {
             Colors::White   => "\u001b[37m",
             Colors::Default => "\u001b[0m",
         };
+
         EscString(s.to_string())
     }
 
@@ -70,11 +72,11 @@ mod xterm {
 fn main() {
     println!("Hello, world!");
     let msg: &'static str = xterm::color_fg(xterm::Colors::Green) ;
-    let col_string: XString  = XString::Esc(color_fg_xstr(xterm::Colors::Green)) ;
+    let col_string: XString  = Esc(color_fg_xstr(xterm::Colors::Green)) ;
     print!("{}",msg);
-    print!("{}",xterm::color_bg(xterm::Colors::Magenta)) ;
+    print!("{}",color_bg(Colors::Magenta)) ;
     print_X(col_string);
-    xterm::hello();
-    print!("{}",xterm::color_fg(xterm::Colors::Default)) ;
+    hello();
+    print!("{}",color_fg(Colors::Default)) ;
     println!("");
 }
