@@ -4,17 +4,13 @@ use xterm::XString::* ;
 
 mod xterm {
 
-    pub fn hello() {
-        println!("Hello Xterm!");
-    }
-
     struct EscString(String);
     struct JuString(String);
     struct TString(String);
 
     pub enum XString { Esc(EscString), Jump(JuString), Text(TString) }
 
-    pub fn print_X ( xstr: XString ) -> () {
+    pub fn print_x ( xstr: XString ) -> () {
         match xstr {
             XString::Esc(s)  => println!("{}", s.0),
             XString::Jump(s) => println!("{}", s.0),
@@ -22,6 +18,7 @@ mod xterm {
         }
     }
 
+    #[allow(dead_code)]
     pub enum Colors { Red, Blue, Green, Yellow, Magenta, Cyan, White, Default }
 
     pub fn color_fg ( col: Colors ) -> &'static str {
@@ -71,12 +68,11 @@ mod xterm {
 
 fn main() {
     println!("Hello, world!");
-    let msg: &'static str = xterm::color_fg(xterm::Colors::Green) ;
-    let col_string: XString  = Esc(color_fg_xstr(xterm::Colors::Green)) ;
+    let msg: &'static str = xterm::color_fg(Colors::Green) ;
+    let col_string: XString  = Esc(color_fg_xstr(Colors::Green)) ;
     print!("{}",msg);
     print!("{}",color_bg(Colors::Magenta)) ;
-    print_X(col_string);
-    hello();
-    print!("{}",color_fg(Colors::Default)) ;
+    print_x(col_string);
+    print!("Oye! {}",color_fg(Colors::Default)) ;
     println!("");
 }
