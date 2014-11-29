@@ -24,8 +24,14 @@ mod xterm {
     }
 
     impl XVec {
-        fn print (&self) -> () {
-            println!("Impl!");
+       pub fn print (&self) -> () {
+          for q in  self.v.iter() {
+              match *q {
+                  XString::Esc(ref q)  => println!("{}", q),
+                  XString::Jump(ref q) => println!("{}", q),
+                  XString::Text(ref q) => println!("{}", q),
+              }
+           }
         }
     }
 
@@ -75,6 +81,7 @@ fn main() {
     let col_string: XString  = color_fg(Colors::Green) ;
     print!("{}",Esc(color_bg(Colors::Magenta))) ;
     print_x(col_string);
+    x_vec.print();
     print!("Oye! {}",color_fg(Colors::Default)) ;
     println!("");
 }
