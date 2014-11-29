@@ -3,7 +3,6 @@
 use std::default::Default;
 use xterm::*;
 use xterm::XString::* ;
-
 mod xterm {
     use std::fmt;
 
@@ -21,7 +20,13 @@ mod xterm {
     }
 
     pub struct XVec {
-        v: Vec<XString>,
+       pub v: Vec<XString>,
+    }
+
+    impl XVec {
+        fn print (&self) -> () {
+            println!("Impl!");
+        }
     }
 
     pub fn print_x ( xstr: XString ) -> () {
@@ -66,6 +71,7 @@ mod xterm {
 
 fn main() {
     println!("Hello, world!");
+    let x_vec : XVec = XVec { v: vec![Text("string".to_string())], } ;
     let col_string: XString  = color_fg(Colors::Green) ;
     print!("{}",Esc(color_bg(Colors::Magenta))) ;
     print_x(col_string);
