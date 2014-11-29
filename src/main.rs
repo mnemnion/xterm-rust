@@ -21,16 +21,13 @@ impl fmt::Show for XString {
     }
 }
 
-
-
-
 pub struct XVec {
    pub v: Vec<XString>,
 }
 
 pub struct Point {
-    pub x: u16,
-    pub y: u16,
+    pub row: u16,
+    pub col: u16,
 }
 
 impl XVec {
@@ -44,9 +41,11 @@ impl XVec {
        }
     }
    pub fn print_clean (&self) -> () {
+       save_cursor();
        print!("{}",color_fg(Colors::Default));
        self.print();
        print!("{}",color_fg(Colors::Default));
+       restore_cursor();
    }
 }
 
@@ -61,6 +60,9 @@ pub fn print_x ( xstr: XString ) -> () {
 
 #[allow(dead_code)]
 pub enum Colors { Red, Blue, Green, Yellow, Magenta, Cyan, White, Default }
+
+fn save_cursor () -> () { print!("\u001b7") }
+fn restore_cursor () -> () { print!("\u001b8") }
 
 pub fn color_fg ( col: Colors ) -> XString {
     XString::Esc(match col {
@@ -90,8 +92,7 @@ pub fn color_bg ( col: Colors ) -> XString {
 }
 
 pub fn make_jump(pt: Point) -> XString {
-    let jump = format!("\u001b[{};{}H",pt.x,pt.y);
-    XString::Jump(jump)
+    XString::Jump(format!("\u001b[{};{}H",pt.row,pt.col))
 }
 
 } // mod xterm
@@ -99,7 +100,7 @@ pub fn make_jump(pt: Point) -> XString {
 
 fn main() {
     println!("Hello, world!");
-    let pt: Point = Point { x: 12, y: 14};
+    let pt: Point = Point { row: 2, col: 25 };
     let x_vec : XVec = XVec { v: vec![Text("string".to_string()),
                               color_bg(Colors::Green),
                               make_jump(pt),
@@ -109,7 +110,7 @@ fn main() {
     let col_string: XString  = color_fg(Colors::Red) ;
     print!("{}",color_bg(Colors::Cyan)) ;
     print_x(col_string);
-    x_vec.print();
+    //x_vec.print();
     x_vec.print_clean();
     print!("Oye! {}",color_fg(Colors::Default)) ;
     println!("");
