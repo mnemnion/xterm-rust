@@ -28,6 +28,11 @@ pub struct XVec {
    pub v: Vec<XString>,
 }
 
+pub struct Point {
+    pub x: u16,
+    pub y: u16,
+}
+
 impl XVec {
    pub fn print (&self) -> () {
       for q in  self.v.iter() {
@@ -84,13 +89,20 @@ pub fn color_bg ( col: Colors ) -> XString {
 
 }
 
+pub fn make_jump(pt: Point) -> XString {
+    let jump = format!("\u001b[{};{}H",pt.x,pt.y);
+    XString::Jump(jump)
+}
+
 } // mod xterm
 
 
 fn main() {
     println!("Hello, world!");
+    let pt: Point = Point { x: 12, y: 14};
     let x_vec : XVec = XVec { v: vec![Text("string".to_string()),
                               color_bg(Colors::Green),
+                              make_jump(pt),
                               Text("green".to_string()),
                               color_fg(Colors::Default),]
   } ;
