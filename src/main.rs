@@ -1,7 +1,6 @@
 #![feature(globs)]
 #![feature(tuple_indexing)]
 use std::default::Default;
-use std::fmt;
 use xterm::*;
 use xterm::XString::* ;
 
@@ -12,11 +11,10 @@ mod xterm {
 
     impl fmt::Show for XString {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-            let mut s = String::new();
-            let s = match self {
-                &XString::Esc(ref q)  => q,
-                &XString::Jump(ref q) => q,
-                &XString::Text(ref q) => q,
+            let s = match *self {
+                XString::Esc(ref q)  => q,
+                XString::Jump(ref q) => q,
+                XString::Text(ref q) => q,
             };
            write!(f,"{}",s)
         }
