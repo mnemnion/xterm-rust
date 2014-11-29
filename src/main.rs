@@ -63,6 +63,7 @@ pub enum Colors { Red, Blue, Green, Yellow, Magenta, Cyan, White, Default }
 
 fn save_cursor () -> () { print!("\u001b7") }
 fn restore_cursor () -> () { print!("\u001b8") }
+pub fn page () -> () { print!("\u001b[2J")}
 
 pub fn color_fg ( col: Colors ) -> XString {
     XString::Esc(match col {
@@ -99,6 +100,7 @@ pub fn make_jump(pt: Point) -> XString {
 
 
 fn main() {
+    page();
     println!("Hello, world!");
     let pt: Point = Point { row: 2, col: 25 };
     let x_vec : XVec = XVec { v: vec![Text("string".to_string()),
