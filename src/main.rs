@@ -30,6 +30,39 @@ pub struct Point {
     pub col: u16,
 }
 
+pub struct Frame {
+    pub tl: Point,
+    pub br: Point,
+}
+
+impl Frame {
+    pub fn inside (&self) -> Frame {
+        Frame { tl: Point { row: self.tl.row +1 , col: self.tl.col +1},
+                br: Point { row: self.br.row -1 , col: self.br.row -1}}
+    }
+}
+
+pub fn draw_frame(f: Frame) -> () {
+    jump(f.tl);
+    print!("┏");
+    for i in range(f.tl.col, f.br.col-1) {
+        print!("━");
+    }
+    print!("┓");
+    for i in range(f.tl.row+1, f.br.row) {
+        jump (Point {row: i, col: f.tl.col});
+        print!("┃");
+        jump (Point {row: i, col: f.br.col});
+        print!("┃");
+    }
+    jump(Point{row: f.br.row, col: f.tl.col});
+    print!("┗");
+    for i in range(f.tl.col, f.br.col-1) {
+        print!("━");
+    }
+    print!("┛");
+}
+
 impl XVec {
    pub fn print (&self) -> () {
       for q in  self.v.iter() {
@@ -131,6 +164,9 @@ fn main() {
     let nl_str = "a string\nwith plenty\nof newlines\nfor the purpose";
     let x_vec_b: XVec = line_split(nl_str.to_string());
     x_vec_b.print_clean();
+    let frame = Frame { tl: Point { row: 5, col: 5}, br: Point { row: 15, col: 15} };
+    draw_frame(frame);
+    draw_frame(frame.inside());
     println!("\n");
     cleanup();
 }
