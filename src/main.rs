@@ -100,6 +100,16 @@ pub fn jump(pt:Point) -> () { print!("{}",make_jump(pt)) }
 pub fn page () -> () { print!("\u001b[2J") }
 pub fn cleanup () -> () { print!("\u001b[0m") }
 
+// helper functions; unpublicize.
+
+pub fn line_split (s: String) -> (XVec) {
+    let mut x_vec  = XVec { v: vec![]};
+    for line in s.as_slice().split('\n') {
+        x_vec.v.push(XString::Text(line.to_string()));
+    };
+    x_vec
+}
+
 } // mod xterm
 
 
@@ -118,5 +128,9 @@ fn main() {
     print_x(col_string);
     print!("Hey there");
     x_vec.print_clean();
+    let nl_str = "a string\nwith plenty\nof newlines\nfor the purpose";
+    let x_vec_b: XVec = line_split(nl_str.to_string());
+    x_vec_b.print_clean();
+    println!("\n");
     cleanup();
 }
