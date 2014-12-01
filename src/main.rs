@@ -40,6 +40,13 @@ impl Frame {
         Frame { tl: Point { row: self.tl.row +1 , col: self.tl.col +1},
                 br: Point { row: self.br.row -1 , col: self.br.row -1}}
     }
+    pub fn move_to (&self, pt: Point) -> Frame {
+        let row_diff = self.br.row - self.tl.row;
+        let col_diff = self.br.col - self.tl.col;
+        Frame { tl: Point { row: pt.row, col: pt.col},
+                br: Point { row: pt.row + row_diff,
+                            col: pt.col + col_diff}}
+    }
 }
 
 pub fn draw_frame(f: Frame) -> () {
@@ -82,7 +89,6 @@ impl XVec {
 
    }
 }
-
 
 pub fn print_x ( xstr: XString ) -> () {
     match xstr {
@@ -151,7 +157,7 @@ fn main() {
     jump(Point{row: 1, col: 1});
     println!("Hello, world!");
     let pt: Point = Point { row: 2, col: 25 };
-    let x_vec : XVec = XVec { v: vec![Text("string".to_string()),
+    let x_vec : XVec = XVec { v: vec![Text("wheredidIgo".to_string()),
                               color_bg(Colors::Green),
                               make_jump(pt),
                               Text("green".to_string()),
@@ -161,12 +167,14 @@ fn main() {
     print_x(col_string);
     print!("Hey there");
     x_vec.print_clean();
+    jump(Point{row:5, col: 30});
     let nl_str = "a string\nwith plenty\nof newlines\nfor the purpose";
     let x_vec_b: XVec = line_split(nl_str.to_string());
     x_vec_b.print_clean();
-    let frame = Frame { tl: Point { row: 5, col: 5}, br: Point { row: 15, col: 15} };
+    let frame = Frame { tl: Point { row: 5, col: 5}, br: Point { row: 9, col: 9} };
     draw_frame(frame);
     draw_frame(frame.inside());
+    draw_frame(frame.move_to(Point{ row: 8, col: 30}));
     println!("\n");
     cleanup();
 }
