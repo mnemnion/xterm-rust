@@ -1,0 +1,75 @@
+#Towards a Modern Terminal
+
+The terminal is the most important application to the professional computer user.
+
+As is typical of our micro-era, the terminal we use is not the terminal we deserve. Nor can we simply get there from here, by extending the terminals and protocols we have. 
+
+##What makes a terminal
+
+A terminal is a program for professional computer users. Developers, system administrators, and the like. The current terminal is a time machine, allowing us to reach the lower substrate of the uniformly pre-modern operating systems we use.
+
+To my taste, the defining features of a terminal, in rough order: It is textually oriented, monospaced, dumb, and pretends to be the sole interface between user and computer. 
+
+###Textual orientation
+
+A terminal must be oriented around text. Here we encounter our first mismatch between modernity and our tools. UTF-8 has emerged as standard, and is bewilderingly complex, with aspects that thoroughly break the terminal paradigm. Our modern terminal is not an ASCII shoehorn, it is and must be Unicode native. The beauty of UTF-8 is that it is a superset of 7-bit ASCII, so this poses no problem for interfacing with primitive or tiny systems. 
+
+There is a deeper meaning to textual orientation: data flowing through the terminal should be serialized as readable, even if that's not the form in which interaction is taking place. 
+
+###Monospaced
+
+A terminal must have a definite number of rows and columns. Everything of significance must be aligned on this grid. 
+
+This is solvable for Unicode, though much scut work must be done. We simply declare by fiat when characters take a single space and when they take two. Those being ones only options. Some languages end up pretty ugly. Those users are used it it, I assure you. 
+
+Can we render proportional text? Images? Video? I don't see why not. Anything that isn't bog text is a) structured by a linear textual sequence, b) rendered by a subsidiary program, c) aligned absolutely on the grid. 
+
+The important part is that the terminal be dumb. But not as dumb as it is right now.
+
+###Dumb
+
+I strongly believe that the terminal renderer should be dumb. Specifically, not Turing complete. Smart enough to have some stacks, not smart enough to have a tree, even an acyclic one. No scripting language whatsoever. I will not budge on this: write a shell. 
+
+The way xterm works is basically correct. It receives, and sometimes sends, streams of ordinary ASCII text. Some of these are escape sequences; they begin with the Esc byte and are parsed to perform such functions as jumping the cursor, paging, deleting text, changing color values, and so on. In general, one can degrade gracefully to pure text by converting jumps to newlines and stripping the rest. These are also used to report mouse values, terminal characteristics, and so on. 
+
+Our magic terminal will have a somewhat richer vocabulary of escape sequences, and provide more awareness of its own state. There is one feature in particular that has no exact analogy: an escape sequence which, when issued, will cause the terminal to reply with a sequence that is expected to be handled by the program. This will cause some of the render stream to be diverted to another program, which is given responsibility over a rectangular area of definite row and column dimensions. This could, for example, render an image. 
+
+The terminal manages this connection once established, so that stdin is pointed at the right terminal socket for the handler depending on cursor and mouse position. It is capable of reporting both the cell clicked and the pixel within the cell, in the case of a mouse event. The handler program sees a terminal of the borrowed row/column dimensions, is aware of the number of pixels involved, and can communicate accordingly. The terminal has appropriate hardware acceleration and bitmap-awareness, it isn't necessary to ASCII serialize pixel data.  
+
+These handlers are ordinary programs that adhere to a standard, which is why they're launched by the user program, through a shell. It would be normal to hand a view of dimension zero to a handler which can process audio: they may be addressed by distinctive sequence, in a way that works the way you'd expect sockets to work. 
+
+The terminal almost has two layers, in that it's just smart enough that if it's told to print something into a handled region by the master stream, it will fail to render, advancing the cursor appropriately, but without surrendering the cursor to the handler. This provides the correct behavior in almost all cases. There is no way to overlap handlers. This will occasionally prove annoying, but will prevent much pain. The same handler can be responsible for two or more regions through distinct sockets, so now you know how to fake it. 
+
+###Sole Interface
+
+A terminal must pretend to take up a full screen. It's smart enough to know when it's changed shape, and to say something when told to. xterm provides the ability to tell an appropriately sized terminal to change shape or minimize. I feel we can route those things around the terminal entirely. The terminal itself shouldn't need to call out to the GUI.
+
+Related: a terminal should capture absolutely every signal within its boundaries except the OS level keystroke for changing programs (⌘-Tab on Macs). 
+
+Here we hit a depressing fact: Our keyboards aren't as orthogonal as they look. One would think hitting alt would send an alt, hitting ctrl will send a control: no. It would simply depress me to go into the details, but they aren't that terrible, if we have a strong guarantee that we will receive everything that flows from the fingers of our typist, correctly. A terminal must have dibs. This is particularly not true on Macs, for various reasons. 
+
+It's not a dealbreaker. Contemporary GUIs let you hook the keys, though I'm told one must be somewhat aggressive about it. It's a priority: with terminals, we type. 
+
+##Rationale
+
+The terminal is a programmer convenience. Our need for a line-based, ASCII-focused, interactive command line will never disappear. Even when working on a full-screen basis, the ability to think and work on a grid is a lifesaver. 
+
+This is why part of such a standard must be an absolute agreement on what each and every Unicode point means, in terms of cursor movement. A row and column must be partially interchangeable, but not entirely: due to vertical text, a four-hanzi Chinese phrase will take up either eight columns and one row, or four rows and two columns, and this cannot be avoided. The critical thing is that a terminal is expected to render every Unicode point sensibly, and use the same amount of cell space in every instance. Either that, or it isn't rendering text in those cells. These are the only options. 
+
+The important parts of the xterm protocol should work, out of the box. It's no terminal if it can't run bash, tmux etc. The only xterm mode it needs to support is xterm proper, the vt100 part; xterm, as befits its era, is capable of pretending to be all sorts of weird things that our terminal needn't emulate. They're easy enough to shim on an OS level if you find yourself VAXing or something. 
+
+The intention with handlers is to provide a reasonably OS-free way of twiddling the pixels on the screen. It's well to pretend that everything is cellular, but good to provide a byte-level stream that can make comfortable assumptions about color and pixel availability. We shouldn't have to resort to OS resolution for a simple handler to stream bitmap data to the terminal. It should be possible to hardware accelerate a complex 3-d system, if you want to play Minecraft in your terminal I'm not here to crush your dreams. But there's definitely an intermediate level where a handler can get at the pixels and stream them in unserialized form: we want this to be reasonably fine-grained. This is a place where careful aesthetics must rule: this could turn into a minefield of unspecified behavior without good taste. 
+
+I'm thinking a region can have three modes: mixed, bitmap, and opaque. An opaque region might not even have a pixel to its name, handling something like audio, or it may be displaying video or any old thing. Clearly the programmer is responsible for cross-OS or indeed cross-purpose compatibility, how could it be otherwise? 
+
+A bitmapped region is addressed on a per-pixel basis and the terminal simply renders it. A mixed region combines rendering instructions to the terminal with cell-filling bitmaps that are stremed on a per-pixel basis: any given cell must either be an instruction (draw an `a`) or a bitmap, with the usual 'failed to render' symbol filling a region that is incorrectly specified. I don't want to decide what to do with three pixels in between two characters, and neither do you. 
+
+Could you render a full browser in the terminal? Obviously, yes. Better yet, it's feasible to write a usable browser that is terminal oriented and still runs Javascript. It's always going to look kind of weird, and degrade to a canvas-like state when people do tricky things to render text. Can't be helped. 
+
+The browser will always fit somewhat awkwardly within the terminal. They're just not the same idea, there will always be a tradeoff between fidelity of render and providing anything but an opaque region view, which is basically just handing control over to Chrome or whomever. 
+
+More to the point, it should be possible to write a little program that takes some comma separated numbers and graphs them to your terminal. This should be comfortable to do from a shell, though most likely not from bash. Tools like full-screen editors, spreadsheets and the like, should be easier to write, look better, and work more consistently. 
+
+You still need a handler. A stream of pixels won't be meaningful, as provided straight to a terminal, because that's brittle across environments. We envision some kind of simple, consistent handler built into the shell, such that rendering an image into the given space and pixel density is resolved by the GUI in a cross-compatible way. This problem has been solved repeatedly, eloquent idioms are available. 
+
+
