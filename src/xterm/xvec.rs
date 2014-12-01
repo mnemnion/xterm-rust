@@ -1,7 +1,6 @@
 #![feature(globs)]
 use std::fmt;
 
-
 pub enum XString { Esc(String), Jump(String), Text(String) }
 
 impl fmt::Show for XString {

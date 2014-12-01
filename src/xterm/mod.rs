@@ -8,6 +8,7 @@
 
 use std::fmt;
 pub use self::xvec::*;
+pub use self::color::Colors;
 pub mod xvec;
 pub mod color;
 

@@ -2,7 +2,7 @@
 
 use xterm::*;
 use xterm::xvec::*;
-use xterm::Colors;
+use xterm::color::*;
 use xterm::XString::*;
 
 mod xterm;

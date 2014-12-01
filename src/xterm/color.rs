@@ -1,8 +1,5 @@
 use super::xvec::*;
 
-pub fn color () { println!("ain't this shit colorful")}
-
-
 #[allow(dead_code)]
 pub enum Colors { Red, Blue, Green, Yellow, Magenta, Cyan, White, Default }
 
