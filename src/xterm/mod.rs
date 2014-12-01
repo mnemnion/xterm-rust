@@ -7,24 +7,16 @@
 //! Sometimes you just wanna XTerm....
 
 use std::fmt;
+pub use self::xvec::*;
+pub mod xvec;
+pub mod color;
 
-pub enum XString { Esc(String), Jump(String), Text(String) }
+// xvec.rs
+// use color.rs
 
-impl fmt::Show for XString {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = match *self {
-            XString::Esc(ref q)  => q,
-            XString::Jump(ref q) => q,
-            XString::Text(ref q) => q,
-        };
-       write!(f,"{}",s)
-    }
-}
+// end xvec.rs
 
-pub struct XVec {
-   pub v: Vec<XString>,
-}
-
+// nav.rs
 pub struct Point {
     pub row: u16,
     pub col: u16,
@@ -70,39 +62,22 @@ pub fn draw_frame(f: Frame) -> () {
     print!("┛");
 }
 
-impl XVec {
-   pub fn print (&self) -> () {
-      for q in  self.v.iter() {
-          match *q {
-              XString::Esc(ref q)  => print!("{}", q),
-              XString::Jump(ref q) => print!("{}", q),
-              XString::Text(ref q) => print!("{}", q),
-          }
-       }
-    }
-   pub fn print_clean (&self) -> () {
-       save_cursor();
-       print!("{}",color_fg(Colors::Default));
-       self.print();
-       print!("{}",color_fg(Colors::Default));
-       restore_cursor();
-
-   }
+pub fn make_jump(pt: Point) -> XString {
+    XString::Jump(format!("\u001b[{};{}H",pt.row,pt.col))
 }
 
-pub fn print_x ( xstr: XString ) -> () {
-    match xstr {
-        XString::Esc(s)  => println!("{}", s),
-        XString::Jump(s) => println!("{}", s),
-        XString::Text(s) => println!("{}", s),
-    }
-}
+pub fn jump(pt:Point) -> () { print!("{}",make_jump(pt)) }
+pub fn page () -> () { print!("\u001b[2J") }
+pub fn cleanup () -> () { print!("\u001b[0m") }
+
+// end nav.rs
+
+// colors.rs
+// use xvec.rs (mutual dependency issue?)
 
 #[allow(dead_code)]
 pub enum Colors { Red, Blue, Green, Yellow, Magenta, Cyan, White, Default }
 
-fn save_cursor () -> () { print!("\u001b7") }
-fn restore_cursor () -> () { print!("\u001b8") }
 
 pub fn color_fg ( col: Colors ) -> XString {
     XString::Esc(match col {
@@ -131,13 +106,6 @@ pub fn color_bg ( col: Colors ) -> XString {
 
 }
 
-pub fn make_jump(pt: Point) -> XString {
-    XString::Jump(format!("\u001b[{};{}H",pt.row,pt.col))
-}
-
-pub fn jump(pt:Point) -> () { print!("{}",make_jump(pt)) }
-pub fn page () -> () { print!("\u001b[2J") }
-pub fn cleanup () -> () { print!("\u001b[0m") }
 
 // helper functions; unpublicize.
 
@@ -149,6 +117,3 @@ pub fn line_split (s: String) -> (XVec) {
     };
     x_vec
 }
-
-
-
