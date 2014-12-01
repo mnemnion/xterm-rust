@@ -2,10 +2,10 @@
 
 use xterm::*;
 use xterm::XString::*;
+
 mod xterm;
 
 fn main() {
-
     page();
     jump(Point{row: 1, col: 1});
     println!("Hello, world!");
