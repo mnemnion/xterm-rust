@@ -1,7 +1,8 @@
 #![feature(globs)]
 
 use xterm::*;
-//use xterm::xvec::*;
+use xterm::xvec::*;
+use xterm::color::*;
 use xterm::XString::*;
 
 mod xterm;
