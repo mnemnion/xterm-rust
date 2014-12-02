@@ -3,7 +3,7 @@
 use xterm::*;
 use xterm::XString::*;
 use xterm::color::{color_fg, color_bg, line_split };
-
+use xterm::nav::*;
 mod xterm;
 
 fn main() {

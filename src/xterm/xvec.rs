@@ -1,7 +1,7 @@
 #![feature(globs)]
 use std::fmt;
 use super::escs::{ANSI_D, ANSI_SAVE, ANSI_RESTORE};
-use super::nav::{save_cursor,restore_cursor};
+use super::nav::{save_cursor,restore_cursor, jump_string, Point};
 
 pub enum XString { Esc(String), Jump(String), Text(String) }
 
@@ -46,4 +46,8 @@ pub fn print_x ( xstr: XString ) -> () {
         XString::Jump(s) => println!("{}", s),
         XString::Text(s) => println!("{}", s),
     }
+}
+
+pub fn make_jump (pt: Point) -> XString {
+    XString::Jump(jump_string(pt))
 }
