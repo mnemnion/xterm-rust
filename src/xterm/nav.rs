@@ -3,12 +3,13 @@ use super::escs::{ANSI_SAVE,ANSI_RESTORE};
 pub fn save_cursor () -> () { print!("{}",ANSI_SAVE) }
 pub fn restore_cursor () -> () { print!("{}",ANSI_RESTORE) }
 
-
+#[deriving(PartialEq, Eq)]
 pub struct Point {
     pub row: u16,
     pub col: u16,
 }
 
+#[deriving(PartialEq, Eq)]
 pub struct Frame {
     pub tl: Point,
     pub br: Point,
@@ -27,7 +28,9 @@ impl Frame {
                             col: pt.col + col_diff}}
     }
     pub fn on_top (&self, pt: Point) -> bool {
-        if self.tl.row == pt.row { true }
+        if (self.tl.row == pt.row) &
+           (self.tl.col <= pt.col) &
+           (self.br.col >= pt.col) { true }
         else { false }
     }
 }
@@ -74,16 +77,17 @@ pub fn cleanup () -> () { print!("\u001b[0m") }
     let fr = Frame { tl: Point { row: 1,  col: 1  },
                         br: Point { row: 11, col: 11 } } ;
     let n_fr = new_frame( Point {row:1, col:1}, 10, 10) ;
-    assert!(fr.tl.row == n_fr.tl.row);
-    assert!(fr.tl.col == n_fr.tl.col);
-    assert!(fr.br.row == n_fr.br.row);
-    assert!(fr.br.col == n_fr.br.col);
+    assert!(fr.eq(&n_fr));
 }
-#[test] fn move_to_test   () {
+#[test] fn move_to_test () {
     let fr = new_frame(Point{row:1,col:1},5,5).move_to(Point{row:7,col:7});
     let n_fr = new_frame(Point{row:7,col:7},5,5);
-    assert!(fr.tl.row == n_fr.tl.row);
-    assert!(fr.tl.col == n_fr.tl.col);
-    assert!(fr.br.row == n_fr.br.row);
-    assert!(fr.br.col == n_fr.br.col);
+    assert!(fr.eq(&n_fr));
+}
+
+#[test] fn on_top_test () {
+    let fr = new_frame(Point{row:1,col:1},5,5);
+    assert!(fr.on_top(Point{row:1,col:3}));
+    assert!(!fr.on_top(Point{row:1,col:7}));
+    assert!(!fr.on_top(Point{row:5, col:3}));
 }
