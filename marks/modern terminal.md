@@ -20,7 +20,7 @@ There is a deeper meaning to textual orientation: data flowing through the termi
 
 A terminal must have a definite number of rows and columns. Everything of significance must be aligned on this grid. 
 
-This is solvable for Unicode, though much scut work must be done. We simply declare by fiat when characters take a single space and when they take two. Those being ones only options. Some languages end up pretty ugly. Those users are used it it, I assure you. 
+This is solvable for Unicode, though much scut work must be done. We simply declare by fiat when graphemes take a single space and when they take two. Those being ones only options. Some languages end up pretty ugly. Those users are used it it, I assure you. 
 
 Can we render proportional text? Images? Video? I don't see why not. Anything that isn't bog text is a) structured by a linear textual sequence, b) rendered by a subsidiary program, c) aligned absolutely on the grid. 
 
@@ -42,9 +42,9 @@ The terminal almost has two layers, in that it's just smart enough that if it's 
 
 ###Sole Interface
 
-A terminal must pretend to take up a full screen. It's smart enough to know when it's changed shape, and to say something when told to. xterm provides the ability to tell an appropriately sized terminal to change shape or minimize. I feel we can route those things around the terminal entirely. The terminal itself shouldn't need to call out to the GUI.
+A terminal should pretend to take up a full screen. It's smart enough to know when it has changed shape, and to say something when told to. xterm provides the ability to tell an appropriately sized terminal to change shape or minimize. I feel we can route those things around the terminal entirely. The terminal itself shouldn't need to call out to the GUI.
 
-Related: a terminal should capture absolutely every signal within its boundaries except the OS level keystroke for changing programs (⌘-Tab on Macs). 
+Related: a terminal should capture absolutely every signal within its boundaries except the OS level keystroke for changing programs (⌘-Tab on Macs). The Mac Terminal program is particularly bad for this, striking a balance with the operating system at the expense of a function that shouldn't be surrendered. 
 
 Here we hit a depressing fact: Our keyboards aren't as orthogonal as they look. One would think hitting alt would send an alt, hitting ctrl will send a control: no. It would simply depress me to go into the details, but they aren't that terrible, if we have a strong guarantee that we will receive everything that flows from the fingers of our typist, correctly. A terminal must have dibs. This is particularly not true on Macs, for various reasons. 
 
@@ -60,7 +60,7 @@ The important parts of the xterm protocol should work, out of the box. It's no t
 
 The intention with handlers is to provide a reasonably OS-free way of twiddling the pixels on the screen. It's well to pretend that everything is cellular, but good to provide a byte-level stream that can make comfortable assumptions about color and pixel availability. We shouldn't have to resort to OS resolution for a simple handler to stream bitmap data to the terminal. It should be possible to hardware accelerate a complex 3-d system, if you want to play Minecraft in your terminal I'm not here to crush your dreams. But there's definitely an intermediate level where a handler can get at the pixels and stream them in unserialized form: we want this to be reasonably fine-grained. This is a place where careful aesthetics must rule: this could turn into a minefield of unspecified behavior without good taste. 
 
-I'm thinking a region can have three modes: mixed, bitmap, and opaque. An opaque region might not even have a pixel to its name, handling something like audio, or it may be displaying video or any old thing. Clearly the programmer is responsible for cross-OS or indeed cross-purpose compatibility, how could it be otherwise? 
+I'm thinking a region can have three modes: mixed, bitmap, and opaque. An opaque region might not even have a pixel to its name, handling something like audio, or it may be displaying video or any old thing. Clearly the programmer is responsible for cross-OS or indeed cross-purpose compatibility, how could it be otherwise? An opaque region is able to receive and send terminal commands, but with no particular expectation as to what it will do. 
 
 A bitmapped region is addressed on a per-pixel basis and the terminal simply renders it. A mixed region combines rendering instructions to the terminal with cell-filling bitmaps that are stremed on a per-pixel basis: any given cell must either be an instruction (draw an `a`) or a bitmap, with the usual 'failed to render' symbol filling a region that is incorrectly specified. I don't want to decide what to do with three pixels in between two characters, and neither do you. 
 
@@ -72,4 +72,37 @@ More to the point, it should be possible to write a little program that takes so
 
 You still need a handler. A stream of pixels won't be meaningful, as provided straight to a terminal, because that's brittle across environments. We envision some kind of simple, consistent handler built into the shell, such that rendering an image into the given space and pixel density is resolved by the GUI in a cross-compatible way. This problem has been solved repeatedly, eloquent idioms are available. 
 
+## Towards a Modern Shell
+
+There's no sense in building a modern terminal without writing a shell that is aware of its capabilities. 
+
+The goal in providing capabilities beyond the textual is mainly to provide tools for interacting with data that is either textual or may be serialized as such. The simplest use of an image handler is to blit a bitmap onto the terminal, but this is by no means the most interesting. 
+
+The wishlist for a shell is necessarily greater, and my instincts on this subject are still developing. Unix heavily constrains the nature of a shell, as does programmer convention. As a result, what I'm calling a shell will make heavy use of an existing Unix shell. It might be more accurate to call it an editor. It's meant to blur those lines, as emacs does, but from the other direction.
+
+The shell boots into a familiar line-based environment, although this is actually more like a buffer in that it has a name and persists by default. One immediate difference is that everything in the directory is executable. `cd foo` and `foo` are exactly equivalent, because a directory calls a handler, which by default changes the `pwd`. typing the name of an image, or clicking it, will print the image to the terminal, returning the prompt, which is quite minimal in many cases, as the shell offers a status line. 
+
+The shell offers two languages: a command-line syntax, which isn't bash-compatible and has a different extension, and a proper language in which it's written. I favor Lua: it's small, LuaJIT is wicked fast, and (meta)tables can do everything. The challenge is that an interactive editing environment should have a complex condition system, with hooks and the like; I have a lot of respect for elisp, at least until I try to read it. Something based on Clojurian syntax would be ideal for me. I'm going to call the language Clua, so we don't get too many ideas about it. 
+ 
+Regardless, the shell exposes its core functions as a C library (no doubt written in Rust), including the virtual machine for Clua. Scripts can be written in any language, .sh merely calls bash, .py calls python, etc. Most of these languages allow sugaring at the command-line so that the shell environment can be loaded implicitly; in some cases we'll need to add a shell comment at the top, but this can easily be native to the language since the shell has a decent parsing engine built in. 
+
+The shell is not a small program, to the point where we'll need to make sure it loads fast and brings libraries in later. In particular it provides a complete text-editing environment, as well as a set of simple primitives for various bitmaps, vectors, audio streaming, at the like. `ed` is remapped to a handler that launches absolutely anything for editing, in an appropriately complex way. Sometimes `ed file` will have the same effect as `file`, sometimes it won't. The original `ed` we'll rename `tte` for The True Editor. Or something. YAGNI.
+
+The editor has an emacs flavor and the ability to write a vim mode. How could it be otherwise? Indeed this may be the only way to break the duopoly: it's not an editor, it's an interactive shell running on a spiffy new terminal. Users start by using the `ed` function out of convenience, add functionality to scratch personal itches, and the system grows from there.
+
+Note that `ed` will open anything and everything for editing. If it's something like a JPEG, the most primitive version of `ed` will load it into a hex editor. A more sophisticted version would parse the header and provide that information sensibly, pushing the rest through a hex function. Eventually you can load a quasi-GUI around the picture and apply filters, doodle on top, etc, and this can become as sophisticated as necessary. 
+
+Load some JSON, and you get a strict mode editor that makes it impossible to type non-JSON information, using the paredit style to reorganize the forms of the data. This can, and should, be built using the shell's native parsing engine. 
+
+The shell needs to come with a proper module and package system, and be properly namespaced. This alone will be a great boon; `curl http://.../blah.sh | sudo sh` will be replaced with `cluapackage run blah` and we can get a signature to go with our script.
+
+This is not a lightweight shell, and doesn't belong on small remote machines. Ourshell has a special relationship with (ba)sh, and can provide some of its typical conveniences to a bash session running remotely via SSH or the like. If you want to examine some JSON, ourshell will tell bash to `cat` the file and will take care of providing that data to a local handler. 
+
+Emacs derives great power from the ability to tune and customize every extension. The idea with Ourshell is to relocate many of the tools that reside within separate programs into the shellspace, where they're transparent and accessible. This is justified by the capabilites of the terminal: we'll naturally want versions of tools that break backwards compatibility. We like calling out to bash and do it often. 
+
+Conversely, the various handlers and libraries of ourshell can be made available to the rest of the Unixverse. It should be reasonable to run bash, call a python script, which calls a handler, which does fancy things to the terminal, but from within bash, not ourshell. Ourshell is providing the handler as a service: this is why handler registration etc. is a terminal level function. Bash has no idea what's going on, stdin gets passed around at a lower level. 
+
+The thing that makes this shell fancy isn't the terminal. Ourshell provides two new categories of shell service: handlers, and a sophisticated parser. These are intimately related: ourshell itself is a handler, specifically, the handler that handles `/` and everything underneath it which is not otherwise registered. Both the command syntax and the programming syntax are parsed by the ourshell parser, as is anything else. Ourshell can either parse a filename with a simple glob like `*.py` and launch Python, or it can in principle parse the Python file, given an appropriate set of combinators, and refuse to run an invalid script prior to launching Python itself. 
+
+I've talked about the parser elsewhere. The notion is that it is binary focused, and capable of being tuned, such that feeding the Python parser the entire standard library will boil down to a set of weights on the combinators. I say "combinator", because that's what's offered from the programming perspective. If the parse file is a regular expression, you'll get a fast regex engine, not a slow parser-combinator regex engine. 
 

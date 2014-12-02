@@ -1,5 +1,6 @@
 #![feature(globs)]
 use std::fmt;
+use super::escs::{ANSI_D};
 
 pub enum XString { Esc(String), Jump(String), Text(String) }
 
@@ -30,9 +31,9 @@ impl XVec {
     }
    pub fn print_clean (&self) -> () {
        save_cursor();
-       print!( "\u001b[0m");
+       print!("{}",ANSI_D);
        self.print();
-       print!("\u001b[0m");
+       print!("{}",ANSI_D);
        restore_cursor();
 
    }

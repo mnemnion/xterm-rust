@@ -11,6 +11,7 @@ pub use self::xvec::*;
 pub use self::color::Colors;
 pub mod xvec;
 pub mod color;
+mod escs;
 
 // xvec.rs
 // use color.rs
