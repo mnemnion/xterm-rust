@@ -6,7 +6,7 @@ use xterm::color::{color_fg, color_bg, line_split };
 use xterm::nav::*;
 mod xterm;
 
-fn main() {
+fn old_main() {
     page();
     jump(Point{row: 1, col: 1});
     println!("Hello, world!");
@@ -30,5 +30,21 @@ fn main() {
     draw_frame(frame.inside());
     draw_frame(frame.move_to(Point{ row: 8, col: 30}));
     println!("\n");
+    cleanup();
+}
+
+fn main() {
+    old_main(); // write some tests already
+    page();
+    jump(Point{row: 1, col: 1});
+    let frame = new_frame ( Point { row: 5, col: 50}, 6, 10 );
+    draw_frame(frame);
+    draw_frame(frame.inside());
+    let other_frame = Frame { tl: Point { row: 5, col: 5}, br: Point { row: 9, col: 9} };
+    let inside = frame.inside();
+    println!("inside: {} {} {} {}", inside.tl.row, inside.tl.col, inside.br.row, inside.br.col);
+    draw_frame(other_frame);
+    draw_frame(other_frame.inside());
+    draw_frame(other_frame.move_to(Point{ row: 8, col: 30}).inside());
     cleanup();
 }
