@@ -70,11 +70,18 @@ pub fn jump(pt:Point) -> () { print!("{}",jump_string(pt)) }
 pub fn page () -> () { print!("\u001b[2J") }
 pub fn cleanup () -> () { print!("\u001b[0m") }
 
-#[test]
-fn new_frame_test () {
+#[test] fn new_frame_test () {
     let fr = Frame { tl: Point { row: 1,  col: 1  },
                         br: Point { row: 11, col: 11 } } ;
     let n_fr = new_frame( Point {row:1, col:1}, 10, 10) ;
+    assert!(fr.tl.row == n_fr.tl.row);
+    assert!(fr.tl.col == n_fr.tl.col);
+    assert!(fr.br.row == n_fr.br.row);
+    assert!(fr.br.col == n_fr.br.col);
+}
+#[test] fn move_to_test   () {
+    let fr = new_frame(Point{row:1,col:1},5,5).move_to(Point{row:7,col:7});
+    let n_fr = new_frame(Point{row:7,col:7},5,5);
     assert!(fr.tl.row == n_fr.tl.row);
     assert!(fr.tl.col == n_fr.tl.col);
     assert!(fr.br.row == n_fr.br.row);
