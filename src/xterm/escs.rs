@@ -22,7 +22,10 @@ pub const ANSI_SAVE:     &'static str = "\u001b7" ;
 pub const ANSI_RESTORE:  &'static str = "\u001b8" ;
 pub const ANSI_PAGE   :  &'static str = "\u001b[2J" ;
 
-#[macro_escape]
 macro_rules! jump_fmt {
     () => ("\u001b[{};{}H")
+}
+
+pub fn jump_str (row: u16, col: u16) -> String {
+    format!(jump_fmt!(), row, col)
 }

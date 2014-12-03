@@ -1,6 +1,6 @@
 use std::fmt;
 use super::escs::{ANSI_D};
-use super::nav::{save_cursor,restore_cursor, jump_string, Point};
+use super::nav::{save_cursor,restore_cursor, jump_string,  Point};
 
 pub enum XString { Esc(String), Jump(String), Text(String) }
 
