@@ -50,3 +50,13 @@ pub fn print_x ( xstr: XString ) -> () {
 pub fn make_jump (pt: Point) -> XString {
     XString::Jump(jump_string(pt))
 }
+
+
+pub fn line_split (s: String) -> (XVec) {
+    //! splits a line
+    let mut x_vec  = XVec { v: vec![]};
+    for line in s.as_slice().split('\n') {
+        x_vec.v.push(XString::Text(line.to_string()));
+    };
+    x_vec
+}

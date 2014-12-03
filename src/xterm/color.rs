@@ -31,15 +31,3 @@ pub fn color_bg ( col: Colors ) -> XString {
     }.to_string())
 
 }
-
-
-// helper functions; unpublicize.
-
-pub fn line_split (s: String) -> (XVec) {
-    //! splits a line
-    let mut x_vec  = XVec { v: vec![]};
-    for line in s.as_slice().split('\n') {
-        x_vec.v.push(XString::Text(line.to_string()));
-    };
-    x_vec
-}

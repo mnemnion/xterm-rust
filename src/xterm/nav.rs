@@ -1,4 +1,4 @@
-use super::escs::{ANSI_SAVE,ANSI_RESTORE};
+use super::escs::{ANSI_SAVE,ANSI_RESTORE, ANSI_PAGE};
 
 pub fn save_cursor () -> () { print!("{}",ANSI_SAVE) }
 pub fn restore_cursor () -> () { print!("{}",ANSI_RESTORE) }
@@ -33,6 +33,7 @@ impl Frame {
            (self.br.col >= pt.col) { true }
         else { false }
     }
+    // on_left, on_right, on_bottom
 }
 
 pub fn new_frame (anchor: Point, height: u16, width: u16 ) -> Frame {
@@ -70,7 +71,7 @@ pub fn jump_string(pt: Point) -> String {
 }
 
 pub fn jump(pt:Point) -> () { print!("{}",jump_string(pt)) }
-pub fn page () -> () { print!("\u001b[2J") }
+pub fn page () -> () { print!("{}",ANSI_PAGE) }
 pub fn cleanup () -> () { print!("\u001b[0m") }
 
 #[test] fn new_frame_test () {
@@ -88,6 +89,8 @@ pub fn cleanup () -> () { print!("\u001b[0m") }
 #[test] fn on_top_test () {
     let fr = new_frame(Point{row:1,col:1},5,5);
     assert!(fr.on_top(Point{row:1,col:3}));
+    assert!(fr.on_top(Point{row:1,col:1}));
+    assert!(fr.on_top(Point{row:1,col:5}));
     assert!(!fr.on_top(Point{row:1,col:7}));
     assert!(!fr.on_top(Point{row:5, col:3}));
 }

@@ -1,8 +1,9 @@
 #![feature(globs)]
+#![feature(macro_rules)]
 
 use xterm::*;
 use xterm::XString::*;
-use xterm::color::{color_fg, color_bg, line_split };
+use xterm::color::{color_fg, color_bg};
 use xterm::nav::*;
 mod xterm;
 
