@@ -1,8 +1,3 @@
- #[macro_escape]
-macro_rules! jump_fmt {
-    () => ("\u001b[{};{}H")
-}
-
 pub const ANSI_R_F: &'static str = "\u001b[31m" ;
 pub const ANSI_B_F: &'static str = "\u001b[34m" ;
 pub const ANSI_G_F: &'static str = "\u001b[32m" ;
@@ -26,3 +21,8 @@ pub const ANSI_D:   &'static str = "\u001b[0m" ;
 pub const ANSI_SAVE:     &'static str = "\u001b7" ;
 pub const ANSI_RESTORE:  &'static str = "\u001b8" ;
 pub const ANSI_PAGE   :  &'static str = "\u001b[2J" ;
+
+#[macro_escape]
+macro_rules! jump_fmt {
+    () => ("\u001b[{};{}H")
+}

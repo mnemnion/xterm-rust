@@ -1,5 +1,12 @@
 use super::escs::{ANSI_SAVE,ANSI_RESTORE, ANSI_PAGE};
 
+
+// belongs in escs.rs
+#[macro_escape]
+macro_rules! jump_fmt {
+    () => ("\u001b[{};{}H")
+}
+
 pub fn save_cursor () -> () { print!("{}",ANSI_SAVE) }
 pub fn restore_cursor () -> () { print!("{}",ANSI_RESTORE) }
 
@@ -66,11 +73,11 @@ pub fn draw_frame(f: Frame) -> () {
     restore_cursor();
 }
 
-pub fn jump_string(pt: Point) -> String {
-    format!("\u001b[{};{}H",pt.row,pt.col)
+pub fn jump_string(pt:Point) -> String {
+    format!(jump_fmt!(), pt.row,pt.col)
 }
 
-pub fn jump(pt:Point) -> () { print!("{}",jump_string(pt)) }
+pub fn jump(pt:Point) -> () { print!(jump_fmt!(),pt.row,pt.col) }
 pub fn page () -> () { print!("{}",ANSI_PAGE) }
 pub fn cleanup () -> () { print!("\u001b[0m") }
 
