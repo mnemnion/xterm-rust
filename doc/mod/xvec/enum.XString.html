@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>mod</a>::<wbr><a href='index.html'>xvec</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.XVec.html'>XVec</a></div><div class='block enum'><h2>Enums</h2><a class='enum current' href='enum.XString.html'>XString</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.print_x.html'>print_x</a></div>
+        <p class='location'><a href='../index.html'>mod</a>::<wbr><a href='index.html'>xvec</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.XVec.html'>XVec</a></div><div class='block enum'><h2>Enums</h2><a class='enum current' href='enum.XString.html'>XString</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.line_split.html'>line_split</a><a class='fn ' href='fn.make_jump.html'>make_jump</a><a class='fn ' href='fn.print_x.html'>print_x</a></div>
     </section>
 
     <nav class="sub">
@@ -44,12 +44,15 @@
 <h1 class='fqn'><span class='in-band'>Enum <a href='../index.html'>mod</a>::<wbr><a href='index.html'>xvec</a>::<wbr><a class='enum' href=''>XString</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]
             </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-9' href='../../src/mod/src/xterm/xvec.rs.html#5'>[src]</a></span></h1>
+        </span><a id='src-205' href='../../src/mod/xvec.rs.html#12'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum XString {
     Esc(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>),
     Jump(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>),
     Text(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>),
-}</pre><h2 class='variants'>Variants</h2>
+}</pre><div class='docblock'><p>XString: these are the valid types of string for xterm markup.</p>
+
+<p>This will eventually be hidden.</p>
+</div><h2 class='variants'>Variants</h2>
 <table><tr><td id='variant.Esc'><a class='stability Unmarked' title='No stability level'></a><code>Esc</code></td><td></td></tr><tr><td id='variant.Jump'><a class='stability Unmarked' title='No stability level'></a><code>Jump</code></td><td></td></tr><tr><td id='variant.Text'><a class='stability Unmarked' title='No stability level'></a><code>Text</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Show.html' title='core::fmt::Show'>Show</a> for <a class='enum' href='../../mod/xvec/enum.XString.html' title='mod::xvec::XString'>XString</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><a class='stability Unstable' title='Unstable: I/O and core have yet to be reconciled'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>

@@ -1,7 +1,14 @@
 use std::fmt;
 use super::escs::{ANSI_D};
-use super::nav::{save_cursor,restore_cursor, jump_string,  Point};
+use super::nav::{save_cursor,
+                 restore_cursor,
+                 jump_string,
+                 Point,
+                 Frame};
 
+/// XString: these are the valid types of string for xterm markup.
+///
+/// This will eventually be hidden.
 pub enum XString { Esc(String), Jump(String), Text(String) }
 
 impl fmt::Show for XString {
@@ -15,6 +22,10 @@ impl fmt::Show for XString {
     }
 }
 
+/// XVec: represents a composed string.
+///
+/// There are three types: Text contains the content, Esc is an escaped
+/// sequence which is not a jump, and Jump is a esc[ which is.
 pub struct XVec {
    pub v: Vec<XString>,
 }
