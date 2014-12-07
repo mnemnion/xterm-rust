@@ -1,4 +1,5 @@
 use std::fmt;
+use std::str::CowString;
 use super::escs::{ANSI_D};
 use super::nav::{save_cursor,
                  restore_cursor,
@@ -9,9 +10,9 @@ use super::nav::{save_cursor,
 /// XString: these are the valid types of string for xterm markup.
 ///
 /// This will eventually be hidden.
-pub enum XString { Esc(String), Jump(String), Text(String) }
+pub enum XString<'b> {Esc(CowString<'b>), Jump(CowString<'b>), Text(CowString<'b>)}
 
-impl fmt::Show for XString {
+impl<'b> fmt::Show for XString<'b> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match *self {
             XString::Esc(ref q)  => q,
@@ -26,11 +27,11 @@ impl fmt::Show for XString {
 ///
 /// There are three types: Text contains the content, Esc is an escaped
 /// sequence which is not a jump, and Jump is a esc[ which is.
-pub struct XVec {
-   pub v: Vec<XString>,
+pub struct XVec<'b> {
+   pub v: Vec<XString<'b>>
 }
 
-impl XVec {
+impl<'b> XVec<'b> {
    pub fn print (&self) -> () {
       for q in  self.v.iter() {
           match *q {
@@ -58,16 +59,27 @@ pub fn print_x ( xstr: XString ) -> () {
     }
 }
 
-pub fn make_jump (pt: Point) -> XString {
-    XString::Jump(jump_string(pt))
+pub fn make_jump<'b> (pt: Point) -> XString<'b> {
+    XString::Jump(jump_string(pt).into_cow())
 }
 
-
-pub fn line_split (s: String) -> (XVec) {
+pub fn line_split<'b> (s: CowString<'b>) -> XVec<'b> {
     //! splits a line
     let mut x_vec  = XVec { v: vec![]};
     for line in s.as_slice().split('\n') {
-        x_vec.v.push(XString::Text(line.to_string()));
+        x_vec.v.push(XString::Text(line.to_string().into_cow()));
     };
     x_vec
 }
+
+/*
+fn lengths (xvec: XVec) -> Vec<uint> {
+    for q in  xvec.v.iter() {
+       match *q {
+           XString::Esc(ref q)  => q.length(),
+           XString::Jump(ref q) => q.length(),
+           XString::Text(ref q) => q.length(),
+       }
+    }.collect()
+}
+*/

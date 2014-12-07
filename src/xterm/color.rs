@@ -5,7 +5,7 @@ use super::escs::*;
 pub enum Colors { Red, Blue, Green, Yellow, Magenta, Cyan, White, Default }
 
 
-pub fn color_fg ( col: Colors ) -> XString {
+pub fn color_fg<'b> ( col: Colors ) -> XString<'b> {
     XString::Esc(match col {
         Colors::Red     => ANSI_R_F,
         Colors::Blue    => ANSI_B_F,
@@ -15,10 +15,10 @@ pub fn color_fg ( col: Colors ) -> XString {
         Colors::Cyan    => ANSI_C_F,
         Colors::White   => ANSI_W_F,
         Colors::Default => ANSI_D_F,
-    }.to_string())
+    }.into_cow())
 }
 
-pub fn color_bg ( col: Colors ) -> XString {
+pub fn color_bg<'b> ( col: Colors ) -> XString<'b> {
     XString::Esc(match col {
         Colors::Red     => ANSI_R_B,
         Colors::Blue    => ANSI_B_B,
@@ -28,6 +28,6 @@ pub fn color_bg ( col: Colors ) -> XString {
         Colors::Cyan    => ANSI_C_B,
         Colors::White   => ANSI_W_B,
         Colors::Default => ANSI_D_B,
-    }.to_string())
+    }.into_cow())
 
 }

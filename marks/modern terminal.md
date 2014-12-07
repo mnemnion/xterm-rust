@@ -22,6 +22,8 @@ A terminal must have a definite number of rows and columns. Everything of signif
 
 This is solvable for Unicode, though much scut work must be done. We simply declare by fiat when graphemes take a single space and when they take two. Those being ones only options. Some languages end up pretty ugly. Those users are used it it, I assure you. 
 
+There is a (Unicode Annex)[http://www.unicode.org/reports/tr11/] that suggests that a fixed-width definition for various contexts exists already. That's gratifying to know.
+
 Can we render proportional text? Images? Video? I don't see why not. Anything that isn't bog text is a) structured by a linear textual sequence, b) rendered by a subsidiary program, c) aligned absolutely on the grid. 
 
 The important part is that the terminal be dumb. But not as dumb as it is right now.

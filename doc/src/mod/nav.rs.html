@@ -143,6 +143,23 @@
 <span id='101'>101</span>
 <span id='102'>102</span>
 <span id='103'>103</span>
+<span id='104'>104</span>
+<span id='105'>105</span>
+<span id='106'>106</span>
+<span id='107'>107</span>
+<span id='108'>108</span>
+<span id='109'>109</span>
+<span id='110'>110</span>
+<span id='111'>111</span>
+<span id='112'>112</span>
+<span id='113'>113</span>
+<span id='114'>114</span>
+<span id='115'>115</span>
+<span id='116'>116</span>
+<span id='117'>117</span>
+<span id='118'>118</span>
+<span id='119'>119</span>
+<span id='120'>120</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>escs</span>::{<span class='ident'>ANSI_SAVE</span>,<span class='ident'>ANSI_RESTORE</span>, <span class='ident'>ANSI_PAGE</span>, <span class='ident'>jump_str</span> };
 
@@ -151,26 +168,36 @@
 
 <span class='comment'>// escs.rs</span>
 
+<span class='doccomment'>/// saves cursor at terminal level.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>save_cursor</span> () <span class='op'>-&gt;</span> () { <span class='macro'>print</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>,<span class='ident'>ANSI_SAVE</span>) }
+<span class='doccomment'>/// restores cursor at terminal level</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>restore_cursor</span> () <span class='op'>-&gt;</span> () { <span class='macro'>print</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>,<span class='ident'>ANSI_RESTORE</span>) }
 
 <span class='attribute'>#[<span class='ident'>deriving</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>)]</span>
+<span class='doccomment'>/// represents a point in terminal space.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Point</span> {
     <span class='kw'>pub</span> <span class='ident'>row</span>: <span class='ident'>u16</span>,
     <span class='kw'>pub</span> <span class='ident'>col</span>: <span class='ident'>u16</span>,
 }
 
 <span class='attribute'>#[<span class='ident'>deriving</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>)]</span>
+<span class='doccomment'>/// represents a rectangular region of terminal space.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Frame</span> {
     <span class='kw'>pub</span> <span class='ident'>tl</span>: <span class='ident'>Point</span>,
     <span class='kw'>pub</span> <span class='ident'>br</span>: <span class='ident'>Point</span>,
 }
 
 <span class='kw'>impl</span> <span class='ident'>Frame</span> {
+    <span class='doccomment'>/// returns a Frame with dimensions one less than original.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// **todo**: prevent a negative frame in the case of (0,0).</span>
+    <span class='doccomment'>/// this behavior would be very silly given the unsignedness of points.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>inside</span> (<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Frame</span> {
         <span class='ident'>Frame</span> { <span class='ident'>tl</span>: <span class='ident'>Point</span> { <span class='ident'>row</span>: <span class='self'>self</span>.<span class='ident'>tl</span>.<span class='ident'>row</span> <span class='op'>+</span><span class='number'>1</span> , <span class='ident'>col</span>: <span class='self'>self</span>.<span class='ident'>tl</span>.<span class='ident'>col</span> <span class='op'>+</span><span class='number'>1</span>},
                 <span class='ident'>br</span>: <span class='ident'>Point</span> { <span class='ident'>row</span>: <span class='self'>self</span>.<span class='ident'>br</span>.<span class='ident'>row</span> <span class='op'>-</span><span class='number'>1</span> , <span class='ident'>col</span>: <span class='self'>self</span>.<span class='ident'>br</span>.<span class='ident'>col</span> <span class='op'>-</span><span class='number'>1</span>}}
     }
+    <span class='doccomment'>/// returns a Frame of the same width and height, translated to pt.</span>
+    <span class='doccomment'>/// pt will be the top left, as is conventional.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>move_to</span> (<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>pt</span>: <span class='ident'>Point</span>) <span class='op'>-&gt;</span> <span class='ident'>Frame</span> {
         <span class='kw'>let</span> <span class='ident'>row_diff</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>br</span>.<span class='ident'>row</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>tl</span>.<span class='ident'>row</span>;
         <span class='kw'>let</span> <span class='ident'>col_diff</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>br</span>.<span class='ident'>col</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>tl</span>.<span class='ident'>col</span>;
@@ -178,13 +205,16 @@
                 <span class='ident'>br</span>: <span class='ident'>Point</span> { <span class='ident'>row</span>: <span class='ident'>pt</span>.<span class='ident'>row</span> <span class='op'>+</span> <span class='ident'>row_diff</span>,
                             <span class='ident'>col</span>: <span class='ident'>pt</span>.<span class='ident'>col</span> <span class='op'>+</span> <span class='ident'>col_diff</span>}}
     }
+    <span class='doccomment'>/// tests whether or not a point is on top of a frame.</span>
+    <span class='doccomment'>/// needed, eventually, for intersection code.</span>
+    <span class='doccomment'>/// there will be many of these functions. I wrote one for practice.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>on_top</span> (<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>pt</span>: <span class='ident'>Point</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> (<span class='self'>self</span>.<span class='ident'>tl</span>.<span class='ident'>row</span> <span class='op'>==</span> <span class='ident'>pt</span>.<span class='ident'>row</span>) <span class='kw-2'>&amp;</span>
            (<span class='self'>self</span>.<span class='ident'>tl</span>.<span class='ident'>col</span> <span class='op'>&lt;=</span> <span class='ident'>pt</span>.<span class='ident'>col</span>) <span class='kw-2'>&amp;</span>
            (<span class='self'>self</span>.<span class='ident'>br</span>.<span class='ident'>col</span> <span class='op'>&gt;=</span> <span class='ident'>pt</span>.<span class='ident'>col</span>) { <span class='boolval'>true</span> }
         <span class='kw'>else</span> { <span class='boolval'>false</span> }
     }
-    <span class='comment'>// on_left, on_right, on_bottom</span>
+    <span class='comment'>// **todo** on_left, on_right, on_bottom</span>
 }
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_frame</span> (<span class='ident'>anchor</span>: <span class='ident'>Point</span>, <span class='ident'>height</span>: <span class='ident'>u16</span>, <span class='ident'>width</span>: <span class='ident'>u16</span> ) <span class='op'>-&gt;</span> <span class='ident'>Frame</span> {
@@ -193,7 +223,10 @@
     <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;Dimensions: {} {} {} {}&quot;</span>, <span class='ident'>fr</span>.<span class='ident'>tl</span>.<span class='ident'>row</span>, <span class='ident'>fr</span>.<span class='ident'>tl</span>.<span class='ident'>col</span>, <span class='ident'>fr</span>.<span class='ident'>br</span>.<span class='ident'>row</span>, <span class='ident'>fr</span>.<span class='ident'>br</span>.<span class='ident'>col</span>);
     <span class='ident'>fr</span>
 }
-
+    <span class='doccomment'>/// currently this just draws a box around a frame.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// eventually there will be several ways to do this.</span>
+    <span class='doccomment'>/// this function does not actually belong in nav.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>draw_frame</span>(<span class='ident'>f</span>: <span class='ident'>Frame</span>) <span class='op'>-&gt;</span> () {
     <span class='ident'>save_cursor</span>();
     <span class='ident'>jump</span>(<span class='ident'>f</span>.<span class='ident'>tl</span>);
@@ -218,11 +251,12 @@
 }
 
 
-
+    <span class='doccomment'>/// returns a string that will generate a jump to pt.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>jump_string</span> (<span class='ident'>pt</span>: <span class='ident'>Point</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
     <span class='ident'>jump_str</span>(<span class='ident'>pt</span>.<span class='ident'>row</span>,<span class='ident'>pt</span>.<span class='ident'>col</span>)
 }
 
+    <span class='doccomment'>/// executes a jump.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>jump</span>(<span class='ident'>pt</span>:<span class='ident'>Point</span>) <span class='op'>-&gt;</span> () { <span class='macro'>print</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>,<span class='ident'>jump_string</span>(<span class='ident'>pt</span>)) }
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>page</span> () <span class='op'>-&gt;</span> () { <span class='macro'>print</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>,<span class='ident'>ANSI_PAGE</span>) }
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>cleanup</span> () <span class='op'>-&gt;</span> () { <span class='macro'>print</span><span class='macro'>!</span>(<span class='string'>&quot;\u001b[0m&quot;</span>) }
