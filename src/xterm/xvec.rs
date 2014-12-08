@@ -49,8 +49,28 @@ impl<'b> XVec<'b> {
        restore_cursor();
 
    }
-}
 
+/*
+    pub fn to_string(&self) -> String {
+        let mut s = "".to_string();
+        for q in self.v.iter() {
+            match *q {
+                XString::Esc(ref q) => s = s.push_str(),
+                XString::Jump(ref q) => s = s.push_str(q),
+                XString::Text(ref q) => s = s.push_str(q),
+            }
+        }
+        s
+    }
+*/
+}
+/*
+impl<'b> fmt::Show for XVec<'b> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+
+    }
+}
+*/
 pub fn print_x ( xstr: XString ) -> () {
     match xstr {
         XString::Esc(s)  => println!("{}", s),
@@ -63,11 +83,11 @@ pub fn make_jump<'b> (pt: Point) -> XString<'b> {
     XString::Jump(jump_string(pt).into_cow())
 }
 
-pub fn line_split<'b> (s: &str) -> XVec<'b> {
+pub fn line_split<'b> (s: &'b str) -> XVec<'b> {
     //! splits a line
     let mut x_vec  = XVec { v: vec![]};
     for line in s.split('\n') {
-        x_vec.v.push(XString::Text(line.to_string().into_cow()));
+        x_vec.v.push(XString::Text(line.into_cow()));
     };
     x_vec
 }
