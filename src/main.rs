@@ -24,7 +24,7 @@ fn old_main() {
     x_vec.print_clean();
     jump(Point{row:5, col: 30});
     let nl_str = "a string\nwith plenty\nof newlines\nfor the purpose";
-    let x_vec_b: XVec = line_split(nl_str.into_cow());
+    let x_vec_b: XVec = line_split(nl_str);
     x_vec_b.print_clean();
     let frame = Frame { tl: Point { row: 5, col: 5}, br: Point { row: 9, col: 9} };
     draw_frame(frame);

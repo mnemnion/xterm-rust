@@ -63,23 +63,11 @@ pub fn make_jump<'b> (pt: Point) -> XString<'b> {
     XString::Jump(jump_string(pt).into_cow())
 }
 
-pub fn line_split<'b> (s: CowString<'b>) -> XVec<'b> {
+pub fn line_split<'b> (s: &str) -> XVec<'b> {
     //! splits a line
     let mut x_vec  = XVec { v: vec![]};
-    for line in s.as_slice().split('\n') {
+    for line in s.split('\n') {
         x_vec.v.push(XString::Text(line.to_string().into_cow()));
     };
     x_vec
 }
-
-/*
-fn lengths (xvec: XVec) -> Vec<uint> {
-    for q in  xvec.v.iter() {
-       match *q {
-           XString::Esc(ref q)  => q.length(),
-           XString::Jump(ref q) => q.length(),
-           XString::Text(ref q) => q.length(),
-       }
-    }.collect()
-}
-*/
